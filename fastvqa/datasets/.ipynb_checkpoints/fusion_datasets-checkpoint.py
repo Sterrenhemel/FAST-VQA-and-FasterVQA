@@ -12,8 +12,6 @@ import cv2
 import random
 import copy
 
-import skvideo.io
-
 random.seed(42)
 
 decord.bridge.set_bridge("torch")
@@ -257,29 +255,21 @@ def get_spatial_and_temporal_samples(
     is_train=False,
 ):
     video = {}
-    if video_path.endswith(".yuv"):
-            ## This is only an adaptation to LIVE-Qualcomm
-        ovideo = skvideo.io.vread(video_path, 1080, 1920, inputdict={'-pix_fmt':'yuvj420p'})
-        for stype in self.samplers:
-            frame_inds = self.samplers[stype](ovideo.shape[0], is_train)
-            imgs = [torch.from_numpy(video[idx]) for idx in frame_inds]
-            video[stype] = torch.stack(imgs, 0).permute(3, 0, 1, 2)
-    else:
-        vreader = VideoReader(video_path)
-        ### Avoid duplicated video decoding!!! Important!!!!
-        all_frame_inds = []
-        frame_inds = {}
-        for stype in samplers:
-            frame_inds[stype] = samplers[stype](len(vreader), is_train)
-            all_frame_inds.append(frame_inds[stype])
-            
-        ### Each frame is only decoded one time!!!
-        all_frame_inds = np.concatenate(all_frame_inds,0)
-        frame_dict = {idx: vreader[idx] for idx in np.unique(all_frame_inds)}
+    vreader = VideoReader(video_path)
+    ### Avoid duplicated video decoding!!! Important!!!!
+    all_frame_inds = []
+    frame_inds = {}
+    for stype in samplers:
+        frame_inds[stype] = samplers[stype](len(vreader), is_train)
+        all_frame_inds.append(frame_inds[stype])
         
-        for stype in samplers:
-            imgs = [frame_dict[idx] for idx in frame_inds[stype]]
-            video[stype] = torch.stack(imgs, 0).permute(3, 0, 1, 2)
+    ### Each frame is only decoded one time!!!
+    all_frame_inds = np.concatenate(all_frame_inds,0)
+    frame_dict = {idx: vreader[idx] for idx in np.unique(all_frame_inds)}
+    
+    for stype in samplers:
+        imgs = [frame_dict[idx] for idx in frame_inds[stype]]
+        video[stype] = torch.stack(imgs, 0).permute(3, 0, 1, 2)
 
     sampled_video = {}
     for stype, sopt in sample_types.items():
@@ -659,16 +649,10 @@ class FusionDatasetK400(torch.utils.data.Dataset):
         
 
         ## Read Original Frames
-        if filename.endswith(".yuv"):
-            ## This is only an adaptation to LIVE-Qualcomm
-            video = skvideo.io.vread(filename, 1080, 1920, inputdict={'-pix_fmt':'yuvj420p'})
-            frame_inds = self.sampler(video.shape[0], self.phase == "train")
-            imgs = [torch.from_numpy(video[idx]) for idx in frame_inds]
-        else:
-            vreader = VideoReader(filename)
-            frame_inds = self.sampler(len(vreader), self.phase == "train")
-            frame_dict = {idx: vreader[idx] for idx in np.unique(frame_inds)}
-            imgs = [frame_dict[idx] for idx in frame_inds]
+        vreader = VideoReader(filename)
+        frame_inds = self.sampler(len(vreader), self.phase == "train")
+        frame_dict = {idx: vreader[idx] for idx in np.unique(frame_inds)}
+        imgs = [frame_dict[idx] for idx in frame_inds]
         img_shape = imgs[0].shape
         video = torch.stack(imgs, 0)
         video = video.permute(3, 0, 1, 2)

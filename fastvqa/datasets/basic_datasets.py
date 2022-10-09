@@ -6,7 +6,6 @@ import numpy as np
 import torch, torchvision
 from tqdm import tqdm
 import cv2
-import skvideo.io
 
 import random
 
@@ -300,15 +299,12 @@ class FastVQAPlusPlusDataset(torch.utils.data.Dataset):
             video_info = self.video_infos[index]
             filename = video_info["filename"]
             label = video_info["label"]
-            if filename.endswith(".yuv"):
-                video = skvideo.io.vread(filename, 1080, 1920, inputdict={'-pix_fmt':'yuvj420p'})
-                frame_inds = self.sampler(video.shape[0], self.phase == "train")
-                imgs = [torch.from_numpy(video[idx]) for idx in frame_inds]
-            else:
-                vreader = VideoReader(filename)
-                frame_inds = self.sampler(len(vreader), self.phase == "train")
-                frame_dict = {idx: vreader[idx] for idx in np.unique(frame_inds)}
-                imgs = [frame_dict[idx] for idx in frame_inds]
+            
+            vreader = VideoReader(filename)
+            frame_inds = self.sampler(len(vreader), self.phase == "train")
+            frame_dict = {idx: vreader[idx] for idx in np.unique(frame_inds)}
+            imgs = [frame_dict[idx] for idx in frame_inds]
+            
             img_shape = imgs[0].shape
             video = torch.stack(imgs, 0)
             video = video.permute(3, 0, 1, 2)
@@ -443,15 +439,12 @@ class FragmentVideoDataset(torch.utils.data.Dataset):
             video_info = self.video_infos[index]
             filename = video_info["filename"]
             label = video_info["label"]
-            if filename.endswith(".yuv"):
-                video = skvideo.io.vread(filename, 1080, 1920, inputdict={'-pix_fmt':'yuvj420p'})
-                frame_inds = self.sampler(video.shape[0], self.phase == "train")
-                imgs = [torch.from_numpy(video[idx]) for idx in frame_inds]
-            else:
-                vreader = VideoReader(filename)
-                frame_inds = self.sampler(len(vreader), self.phase == "train")
-                frame_dict = {idx: vreader[idx] for idx in np.unique(frame_inds)}
-                imgs = [frame_dict[idx] for idx in frame_inds]
+            
+            vreader = VideoReader(filename)
+            frame_inds = self.sampler(len(vreader), self.phase == "train")
+            frame_dict = {idx: vreader[idx] for idx in np.unique(frame_inds)}
+            imgs = [frame_dict[idx] for idx in frame_inds]
+            
             img_shape = imgs[0].shape
             video = torch.stack(imgs, 0)
             video = video.permute(3, 0, 1, 2)
