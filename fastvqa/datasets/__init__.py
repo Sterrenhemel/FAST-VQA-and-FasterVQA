@@ -12,9 +12,12 @@ from .basic_datasets import (
     FragmentSampleFrames,
 )
 
+from .inference_dataset import (
+    get_fragments,
+)
+
 ## Version 1.0 Dataset API, includes DiViDe VQA and its variants
 from .fusion_datasets import SimpleDataset, FusionDataset,  LSVQPatchDataset, FusionDatasetK400
-
 
 __all__ = [
     "FragmentVideoDataset",
