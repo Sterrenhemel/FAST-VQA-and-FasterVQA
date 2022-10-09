@@ -8,7 +8,6 @@ import numpy as np
 import argparse
 
 if __name__ == "__main__":
-    from fastvqa.apis import deep_end_to_end_vqa; deep_end_to_end_vqa(True)    
     parser = argparse.ArgumentParser()
     
     ### can choose between
