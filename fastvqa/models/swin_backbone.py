@@ -18,7 +18,7 @@ def fragment_infos(D, H, W, fragments=7, device="cuda"):
     return m.long()
 
 
-@lru_cache
+@lru_cache()
 def global_position_index(
     D,
     H,
@@ -49,7 +49,7 @@ def global_position_index(
     )  # Wd*Wh*Ww, Wd*Wh*Ww, 3
     return relative_coords  # relative_coords
 
-@lru_cache
+@lru_cache()
 def get_adaptive_window_size(
     base_window_size,
     input_x_size,

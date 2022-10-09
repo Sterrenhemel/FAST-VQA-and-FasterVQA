@@ -17,7 +17,7 @@ def fragment_infos(D, H, W, fragments=7, device="cuda"):
     return m.long()
 
 
-@lru_cache
+@lru_cache()
 def global_position_index(
     D,
     H,
