@@ -65,7 +65,7 @@ def get_score(video_path: str, device: str):
         sampled_video = ((sampled_video.permute(1, 2, 3, 0) - mean) / std).permute(3, 0, 1, 2)
         num_clips = t_data_opt.get("num_clips",1)
         sampled_video = sampled_video.reshape(sampled_video.shape[0], num_clips, -1, *sampled_video.shape[2:]).transpose(0,1)
-        vsamples[sample_type] = sampled_video.to(args.device)
+        vsamples[sample_type] = sampled_video.to(device)
     
     evaluator = get_model()
     result = evaluator(vsamples)
