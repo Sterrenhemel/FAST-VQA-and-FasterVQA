@@ -67,7 +67,7 @@ def get_score(video_path: str, device: str):
         sampled_video = sampled_video.reshape(sampled_video.shape[0], num_clips, -1, *sampled_video.shape[2:]).transpose(0,1)
         vsamples[sample_type] = sampled_video.to(device)
     
-    evaluator = get_model()
+    evaluator = get_model(opt=opt, device=device)
     result = evaluator(vsamples)
     score = rescale(result.mean().item())
     return score
