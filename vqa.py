@@ -7,6 +7,12 @@ import torch
 import numpy as np
 import argparse
 
+
+
+a1, a2, a3, a4 = -0.08283314, 0.037915636, 17.057644220869555, 63.291117743589744
+def rescale(x):
+    return ((x - a1) / a2) * a3 + a4
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     
@@ -75,4 +81,5 @@ if __name__ == "__main__":
         vsamples[sample_type] = sampled_video.to(args.device)
     
     result = evaluator(vsamples)
-    print(f"The quality score of the video is {result.mean().item():.5f}.")
+    score = rescale(result.mean().item())
+    print(f"The quality score of the video is {score:.5f}.")
