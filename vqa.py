@@ -16,7 +16,7 @@ if __name__ == "__main__":
     ### options/fast/fast-m.yml
     parser.add_argument(
         "-o", "--opt", type=str, 
-        default="./options/fast/f3dvqa-b.yml", 
+        default="./options/fast/fast-b.yml", 
         help="the option file"
     )
     
