@@ -1,17 +1,6 @@
 
-import yaml
-import decord
-from fastvqa.datasets import get_spatial_fragments, SampleFrames, FragmentSampleFrames
-from fastvqa.models import DiViDeAddEvaluator
-import torch
-import numpy as np
 import argparse
-from .predict import get_score
-
-
-a1, a2, a3, a4 = -0.08283314, 0.037915636, 17.057644220869555, 63.291117743589744
-def rescale(x):
-    return ((x - a1) / a2) * a3 + a4
+from fastvqa.predict import get_score
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
